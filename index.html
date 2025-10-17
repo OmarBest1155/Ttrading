@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trading Journal Tracker</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="sidebar">
+        <div class="logo">
+            <i class="fas fa-chart-line"></i>
+            TradeTracker
+        </div>
+        <nav>
+            <ul>
+                <li><a href="#" data-section="dashboard" class="active">
+                    <i class="fas fa-home"></i> Dashboard</a>
+                </li>
+                <li><a href="#" data-section="new-trade">
+                    <i class="fas fa-plus-circle"></i> New Trade</a>
+                </li>
+                        <li><a href="#" data-section="trading-day">
+                            <i class="fas fa-calendar-day"></i> Trading Day</a>
+                        </li>
+                <li><a href="#" data-section="trade-history">
+                    <i class="fas fa-history"></i> Trade History</a>
+                </li>
+                <li><a href="#" data-section="analytics">
+                    <i class="fas fa-chart-bar"></i> Analytics</a>
+                </li>
+                <li><a href="#" data-section="settings">
+                    <i class="fas fa-cog"></i> Settings</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+    <div class="main-content">
+        <section id="dashboard" class="content-section active">
+            <header>
+                <h1>Trading Dashboard</h1>
+                <div class="dashboard-summary">
+                    <div class="summary-card profit">
+                        <h3>Total Profit/Loss</h3>
+                        <p class="amount">$0.00</p>
+                    </div>
+                    <div class="summary-card win-rate">
+                        <h3>Win Rate</h3>
+                        <p class="amount">0%</p>
+                    </div>
+                    <div class="summary-card trades">
+                        <h3>Total Trades</h3>
+                        <p class="amount">0</p>
+                    </div>
+                    <div class="summary-card trades-needed">
+                        <h3>Trades Needed to Goal</h3>
+                        <p class="amount" id="trades-needed">Calculating...</p>
+                    </div>
+                    <div class="summary-card money-win">
+                        <h3>Money Win %</h3>
+                        <p class="amount" id="money-win-percent">0%</p>
+                    </div>
+                </div>
+            </header>
+            <div class="content">
+                <div class="recent-trades">
+                    <h2>Recent Trades</h2>
+                    <div class="trades-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                        <th>Day</th>
+                                        <th>Date</th>
+                                    <th>Symbol</th>
+                                    <th>Type</th>
+                                    <th>Entry</th>
+                                    <th>Exit</th>
+                                    <th>P/L</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recent-trades-body">
+                                <!-- Trades will be added here dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="new-trade" class="content-section">
+            <header>
+                <h1>Log New Trade</h1>
+            </header>
+            <div class="content">
+                <form id="trade-form" class="trade-form">
+                    <div class="form-group">
+                        <label for="symbol">Symbol</label>
+                        <input type="text" id="symbol" required placeholder="e.g., AAPL">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="type">Type</label>
+                            <select id="type" required>
+                                <option value="LONG">Long</option>
+                                <option value="SHORT">Short</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="date">Date</label>
+                            <div class="position-size-container">
+                                <input type="datetime-local" id="date" required>
+                                <button type="button" id="current-time-btn" class="btn-all-in">Now</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="entry">Entry Price</label>
+                            <input type="number" id="entry" step="0.01" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="exit">Exit Price</label>
+                            <div class="toggle-container">
+                                <input type="number" id="exit" step="0.01" required>
+                                <button type="button" id="toggle-exit-mode" class="btn-toggle">Number</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="size">Position Size</label>
+                            <div class="position-size-container">
+                                <input type="number" id="size" required>
+                                <button type="button" id="all-in-btn" class="btn-all-in">All In</button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="risk">Risk %</label>
+                            <input type="number" id="risk" step="0.1" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="notes">Trade Notes</label>
+                        <textarea id="notes" rows="4" placeholder="Enter your trade analysis, strategy used, and lessons learned..."></textarea>
+                    </div>
+                    <button type="submit" class="btn-submit">Log Trade</button>
+                </form>
+            </div>
+        </section>
+
+        <section id="trading-day" class="content-section">
+            <header>
+                <h1>Trading Day</h1>
+            </header>
+            <div class="content">
+                <!-- trading-day-container: populated by script.js (keeps existing markup/code unchanged) -->
+                <div id="trading-day-container"></div>
+            </div>
+        </section>
+
+        <section id="trade-history" class="content-section">
+            <header>
+                <h1>Trade History</h1>
+                <div class="filters">
+                    <input type="text" id="symbol-filter" placeholder="Filter by symbol...">
+                    <select id="type-filter">
+                        <option value="">All Types</option>
+                        <option value="LONG">Long</option>
+                        <option value="SHORT">Short</option>
+                    </select>
+                    <input type="date" id="date-filter">
+                </div>
+            </header>
+            <div class="content">
+                <div class="trades-table full-width">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Day</th>
+                                <th>Date</th>
+                                <th>Symbol</th>
+                                <th>Type</th>
+                                <th>Entry</th>
+                                <th>Exit</th>
+                                <th>Size</th>
+                                <th>P/L</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="history-trades-body">
+                            <!-- Trade history will be added here dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section id="analytics" class="content-section">
+            <header>
+                <h1>Trading Analytics</h1>
+            </header>
+            <div class="content">
+                <div class="charts-container">
+                    <div class="chart-card">
+                        <h3>Profit/Loss Over Time</h3>
+                        <div class="chart" id="pl-chart"></div>
+                    </div>
+                    <div class="chart-card">
+                        <h3>Win Rate by Asset</h3>
+                        <div class="chart" id="winrate-chart"></div>
+                    </div>
+                    <div class="chart-card">
+                        <h3>Trading Performance Metrics</h3>
+                        <div class="metrics-grid">
+                            <div class="metric">
+                                <span class="label">Average Win</span>
+                                <span class="value" id="avg-win">$0.00</span>
+                            </div>
+                            <div class="metric">
+                                <span class="label">Average Loss</span>
+                                <span class="value" id="avg-loss">$0.00</span>
+                            </div>
+                            <div class="metric">
+                                <span class="label">Largest Win</span>
+                                <span class="value" id="largest-win">$0.00</span>
+                            </div>
+                            <div class="metric">
+                                <span class="label">Largest Loss</span>
+                                <span class="value" id="largest-loss">$0.00</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-card">
+                        <h3>Portfolio Performance by Trade</h3>
+                        <div class="chart" id="portfolio-trade-chart"></div>
+                    </div>
+                    <div class="chart-card">
+                        <h3>Portfolio Performance by Day</h3>
+                        <div class="chart" id="portfolio-day-chart"></div>
+                    </div>
+                    <div class="chart-card">
+                        <h3>Total Win and Total Loss</h3>
+                        <div class="metrics-grid">
+                            <div class="metric">
+                                <span class="label">Total Win</span>
+                                <span class="value" id="total-win">$0.00</span>
+                            </div>
+                            <div class="metric">
+                                <span class="label">Total Loss</span>
+                                <span class="value" id="total-loss">$0.00</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-card">
+                        <h3>Win/Loss Ratio</h3>
+                        <div class="chart" id="win-loss-ratio-chart"></div>
+                    </div>
+                    <div class="chart-card">
+                        <h3>Trade Distribution</h3>
+                        <div class="chart" id="trade-distribution-chart"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="settings" class="content-section">
+            <header>
+                <h1>Settings</h1>
+            </header>
+            <div class="content">
+                <form id="settings-form" class="settings-form">
+                    <div class="form-group">
+                        <label for="settings-balance">Current Balance</label>
+                        <input type="number" id="settings-balance" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label for="settings-fee">Trade Fee % (applied per trade)</label>
+                        <input type="number" id="settings-fee" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label for="settings-goal">Profit Goal (leave empty to remove goal)</label>
+                        <input type="number" id="settings-goal" step="0.01">
+                    </div>
+                    <div class="form-row">
+                        <button type="button" id="save-settings" class="btn-submit">Save Settings</button>
+                        <button type="button" id="reset-goal" class="btn-end-day">Remove Goal</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </div>
+    <!-- Onboarding Modal -->
+    <div class="onboarding-overlay" id="onboardingOverlay">
+        <div class="onboarding-modal">
+            <div class="onboarding-content">
+                <div class="onboarding-header">
+                    <i class="fas fa-chart-line"></i>
+                    <h2>Welcome to TradeTracker</h2>
+                    <p>Let's set up your trading journey</p>
+                </div>
+                <div class="onboarding-steps">
+                    <div class="step" data-step="1">
+                        <h3>Initial Balance</h3>
+                        <p>Enter your starting trading balance:</p>
+                        <div class="input-wrapper">
+                            <span class="currency-symbol">$</span>
+                            <input type="number" id="initialBalance" placeholder="Enter your balance" step="0.01" min="0">
+                        </div>
+                    </div>
+                    <div class="step" data-step="2">
+                        <h3>Set Your Goal</h3>
+                        <p>Set an optional profit target:</p>
+                        <div class="input-wrapper">
+                            <span class="currency-symbol">$</span>
+                            <input type="number" id="profitGoal" placeholder="Enter your goal (optional)" step="0.01" min="0">
+                        </div>
+                    </div>
+                </div>
+                <div class="onboarding-progress">
+                    <div class="progress-dot active" data-step="1"></div>
+                    <div class="progress-line"></div>
+                    <div class="progress-dot" data-step="2"></div>
+                </div>
+                <button class="onboarding-button" id="onboardingNext">
+                    <span>Next</span>
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
